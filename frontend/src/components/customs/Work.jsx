@@ -4,29 +4,34 @@ import { Button } from "../ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Work = () => {
-  const [url, setUrl] = useState("");
+  const [id, setId] = useState("");
   const [data, setData] = useState([]);
   const [click, setClick] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      // Send POST request to backend to shorten URL
-      const response = await fetch(`http://localhost:8000/url/analyze/${url}`, {
+      // Send GET request to backend to fetch data
+      const apiUrl = import.meta.env.VITE_BASE_URL;
+      const response = await fetch(`${apiUrl}/analyze/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       const res = await response.json();
+      setLoading(false); // Stop loading
       if (response.ok) {
-        setData(res.visitHistory);
-        setClick(res.clickCount);
+        setData(res.visitHistory); // Set the visit history
+        setClick(res.clickCount); // Set the click count
       } else {
-        console.error(res.message);
+        console.error(res.message); // Handle errors from backend
       }
     } catch (error) {
+      setLoading(false); // Stop loading on error
       console.error("Error:", error);
     }
   };
@@ -38,16 +43,17 @@ const Work = () => {
         <Input
           type="text"
           className="text-center"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          value={id}
+          onChange={(e) => setId(e.target.value)}
           placeholder="Enter ID"
           required
         />
         <Button
           type="submit"
           className="my-5 transition-all hover:shadow-md hover:scale-105 active:scale-95"
+          disabled={loading} // Disable button while loading
         >
-          Get Data
+          {loading ? "fetching Data..." : "Fetch Data"} {/* Loading text */}
         </Button>
       </form>
       {data && (
