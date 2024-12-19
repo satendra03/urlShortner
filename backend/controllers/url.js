@@ -26,7 +26,6 @@ export const generateShortUrl = async (req, res) => {
   const PORT = process.env.PORT || 8000;
   // const baseUrl = `${process.env.BASE_URL}:${PORT}`;
   const baseUrl = `${process.env.BASE_URL}`;
-  console.log(baseUrl);
   
   const shortUrl = `${baseUrl}/url/${shortId}`;
   // Save the short URL to the database
