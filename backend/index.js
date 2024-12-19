@@ -34,6 +34,11 @@ app.use(express.json());
 // Routes
 app.use("/url", router);
 
+// Export the Express app as a handler for Vercel
+export default function handler(req, res) {
+  app(req, res);
+}
+
 app.listen(PORT, "0.0.0.0", () => {
   console.clear();
   console.log(`Server is running on port ${PORT}`);
