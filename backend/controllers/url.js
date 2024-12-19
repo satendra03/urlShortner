@@ -63,7 +63,7 @@ export const redirectToOriginalUrl = async (req, res) => {
 export const analyzeUrl = async (req, res) => {
   const { shortId } = req.params;
   const url = await URL.findOne({ shortId: shortId });
-  if (!url) return res.status(404).json({ message: "URL not found" });
+  if (!url) return res.status(404).json({ message: "ID not found" });
   return res.status(200).json({
     visitHistory: url.visitHistory,
     clickCount: url.visitHistory.length,

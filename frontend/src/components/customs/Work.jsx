@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import toast from "react-hot-toast";
 
 const Work = () => {
   const [id, setId] = useState("");
@@ -16,6 +17,8 @@ const Work = () => {
     try {
       // Send GET request to backend to fetch data
       const apiUrl = import.meta.env.VITE_BASE_URL;
+      console.log("API URL:", `${apiUrl}/analyze/${id}`);
+
       const response = await fetch(`${apiUrl}/analyze/${id}`, {
         method: "GET",
         headers: {
@@ -24,15 +27,22 @@ const Work = () => {
       });
       const res = await response.json();
       setLoading(false); // Stop loading
+      console.log("Data:", res);
       if (response.ok) {
         setData(res.visitHistory); // Set the visit history
         setClick(res.clickCount); // Set the click count
       } else {
         console.error(res.message); // Handle errors from backend
+        toast.error(res.message); // Show error message
+        setClick(0);
+        setData([]); // Clear data if error occurred
       }
     } catch (error) {
       setLoading(false); // Stop loading on error
       console.error("Error:", error);
+      toast.error("Failed to fetch. Enter Correct ID"); // Show error message
+      setClick(0);
+      setData([]); // Clear data if error occurred
     }
   };
 
