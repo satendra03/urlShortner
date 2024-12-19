@@ -1,0 +1,40 @@
+{
+  "name": "urlshortner",
+  "version": "1.0.0",
+  "description": "URL Shortner, a simple application where you can get a shorted url of the provided url. This is a small project, under my backend learning journey.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/satendra03/urlShortner.git"
+  },
+  "keywords": [
+    "URL",
+    "Shorter",
+    "backend",
+    "project",
+    "url",
+    "bitly",
+    "copy",
+    "tinyurl"
+  ],
+  "author": "Satendra Kumar Parteti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/satendra03/urlShortner/issues"
+  },
+  "homepage": "https://github.com/satendra03/urlShortner#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.1",
+    "nanoid": "^5.0.9",
+    "nodemon": "^3.1.9"
+  }
+}
