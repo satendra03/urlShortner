@@ -13,7 +13,13 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Enable CORS
-app.use(cors());
+const allowedOrigins = ['https://short-n-share-by-satendra.vercel.app'];  // frontend URL
+app.use(cors({
+  origin: allowedOrigins,  // Only allow requests from this origin
+  methods: ['GET', 'POST'],  // Allowed methods
+  allowedHeaders: ['Content-Type'],  // Allowed headers
+}));
+// app.use(cors());
 
 // Connect to MongoDB
 connectMongoDB(process.env.MONGO_URI);
