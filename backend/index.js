@@ -3,27 +3,18 @@ import cors from 'cors'
 import { router } from "./routes/url.js";
 import { connectMongoDB } from "./connection.js";
 import { configDotenv } from "dotenv";
-import { logRequest } from "./middlewares/url.js";
 
-// Enable CORS
-app.use(cors({
-  origin: 'https://short-n-share-by-satendra.vercel.app',  // Only allow requests from this origin
-}));
+
 
 // Load environment variables
 configDotenv();
 
 // Create express app instance and set port number
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = 8000;
 
-
-// const allowedOrigins = ['https://short-n-share-by-satendra.vercel.app'];  // frontend URL
-// app.use(cors({
-//   origin: allowedOrigins,  // Only allow requests from this origin
-//   methods: ['GET', 'POST'],  // Allowed methods
-//   allowedHeaders: ['Content-Type'],  // Allowed headers
-// }));
+// Enable CORS
+app.use(cors());
 
 
 // Connect to MongoDB
@@ -32,9 +23,6 @@ connectMongoDB(process.env.MONGO_URI);
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// Log requests
-// app.use(logRequest('log.txt'));
 
 // Routes
 app.use("/url", router);

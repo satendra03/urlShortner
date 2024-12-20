@@ -4,6 +4,10 @@ This is a URL Shortener application built with a backend using Express and Mongo
 
 ---
 
+### This is not a hosted application, you can use it locally
+
+--- 
+
 ## Features
 
 - Shorten URLs
