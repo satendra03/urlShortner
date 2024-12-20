@@ -5,6 +5,11 @@ import { connectMongoDB } from "./connection.js";
 import { configDotenv } from "dotenv";
 import { logRequest } from "./middlewares/url.js";
 
+// Enable CORS
+app.use(cors({
+  origin: 'https://short-n-share-by-satendra.vercel.app',  // Only allow requests from this origin
+}));
+
 // Load environment variables
 configDotenv();
 
@@ -12,14 +17,14 @@ configDotenv();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Enable CORS
+
 // const allowedOrigins = ['https://short-n-share-by-satendra.vercel.app'];  // frontend URL
 // app.use(cors({
 //   origin: allowedOrigins,  // Only allow requests from this origin
 //   methods: ['GET', 'POST'],  // Allowed methods
 //   allowedHeaders: ['Content-Type'],  // Allowed headers
 // }));
-app.use(cors());
+
 
 // Connect to MongoDB
 connectMongoDB(process.env.MONGO_URI);
