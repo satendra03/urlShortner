@@ -19,7 +19,7 @@ function Main() {
     e.preventDefault();
     setLoading(true); // Start loading
     try {
-      const apiUrl = import.meta.env.VITE_BASE_URL; // API URL for shortening URLs
+      const apiUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000/url'; // API URL for shortening URLs
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
