@@ -11,10 +11,16 @@ configDotenv();
 
 // Create express app instance and set port number
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 // Enable CORS
-app.use(cors());
+app.use(cors(
+  { 
+    origin: process.env.BASE_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }
+));
 
 
 // Connect to MongoDB
