@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Routes
-app.use("/url", router);
+app.use("/", router);
 
 // Export the Express app as a handler for Vercel
 export default function handler(req, res) {
