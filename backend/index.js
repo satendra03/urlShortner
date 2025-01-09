@@ -16,15 +16,16 @@ const PORT = process.env.PORT || 8000;
 // Enable CORS
 app.use(cors(
   { 
-    origin: process.env.BASE_URL,
+    origin: process.env.BASE_URL || 'http://localhost:5173',
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }
 ));
+app.options("*", cors());
 
 
 // Connect to MongoDB
-connectMongoDB(process.env.MONGO_URI);
+connectMongoDB(process.env.MONGO_URI || "mongodb://localhost:27017/urlShortner");
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));

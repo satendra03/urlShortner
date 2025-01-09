@@ -23,8 +23,7 @@ export const generateShortUrl = async (req, res) => {
   }
   // Generate new short URL and save it to the database
   const shortId = nanoid(8);
-  const PORT = process.env.PORT || 8000;
-  const baseUrl = `${process.env.BASE_URL}:${PORT}`;  
+  const baseUrl = `${process.env.BASE_URL}`;  
   
   const shortUrl = `${baseUrl}/url/${shortId}`;
   // Save the short URL to the database
