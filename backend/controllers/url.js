@@ -23,9 +23,9 @@ export const generateShortUrl = async (req, res) => {
   }
   // Generate new short URL and save it to the database
   const shortId = nanoid(8);
-  const baseUrl = `${process.env.BASE_URL}`;  
+  const baseUrl = `${process.env.BASE_URL || "http://localhost:8080"}`;  
   
-  const shortUrl = `${baseUrl}/url/${shortId}`;
+  const shortUrl = `${baseUrl}/${shortId}`;
   // Save the short URL to the database
   await URL.create({
     shortId: shortId,
