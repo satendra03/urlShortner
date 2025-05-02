@@ -1,6 +1,8 @@
 import { nanoid } from "nanoid";
 import URL from "../models/url.js";
 
+const PORT = process.env.PORT || 8000;
+
 // Generate short URL
 export const generateShortUrl = async (req, res) => {
   const body = req.body;
@@ -23,7 +25,7 @@ export const generateShortUrl = async (req, res) => {
   }
   // Generate new short URL and save it to the database
   const shortId = nanoid(8);
-  const baseUrl = `${process.env.BASE_URL || "http://localhost:8080"}`;  
+  const baseUrl = `${process.env.BASE_URL || `http://localhost:${PORT}`}`;  
   
   const shortUrl = `${baseUrl}/${shortId}`;
   // Save the short URL to the database
@@ -57,6 +59,7 @@ export const redirectToOriginalUrl = async (req, res) => {
     }
   );
   if (!url) return res.status(404).json({ message: "URL not found" });
+  console.log(url);
   res.redirect(url.redirectUrl);
 };
 
