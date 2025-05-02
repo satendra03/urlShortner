@@ -1,0 +1,14 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Every 5 minutes
+  workflow_dispatch:       # Allow manual trigger if needed
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl your backend
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://urlshortner-fozw.onrender.com
