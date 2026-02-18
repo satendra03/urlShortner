@@ -19,10 +19,11 @@ app.use(express.json());
 // Enable CORS
 app.use(cors(
   {origin: '*', // Allow all origins (you can specify specific origins if needed)
-   methods: ['GET', 'POST'], // Allow specific HTTP methods
+   methods: ['GET', 'POST', 'OPTIONS'], // Allow specific HTTP methods
    allowedHeaders: ['Content-Type'] // Allow specific headers
   }
 ));
+
 
 
 // Connect to MongoDB
