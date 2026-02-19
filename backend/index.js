@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { router } from "./routes/url.js";
-import { connectMongoDB } from "./connection.js";
+import { initializeFirebase } from "./connection.js";
 import { configDotenv } from "dotenv";
 
 // Load environment variables
@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 8000;
    ======================= */
 app.use(
   cors({
-    origin: "https://short-n-share.vercel.app",
+    origin: ["https://short-n-share.vercel.app", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -35,7 +35,7 @@ app.use(express.json());
 /* =======================
    DATABASE
    ======================= */
-connectMongoDB(process.env.MONGO_URI);
+initializeFirebase();
 
 /* =======================
    ROUTES

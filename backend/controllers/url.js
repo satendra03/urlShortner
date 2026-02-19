@@ -1,75 +1,106 @@
 import { nanoid } from "nanoid";
-import URL from "../models/url.js";
+import {
+  findByRedirectUrl,
+  findByShortId,
+  createUrl,
+  updateUrl,
+} from "../models/url.js";
 
 const PORT = process.env.PORT || 8000;
 
 // Generate short URL
 export const generateShortUrl = async (req, res) => {
-  const body = req.body;
-  if (!body || !body.redirectUrl)
-    return res
-      .status(400)
-      .json({ message: "Invalid request, missing redirectUrl" });
+  try {
+    const body = req.body;
+    if (!body || !body.redirectUrl)
+      return res
+        .status(400)
+        .json({ message: "Invalid request, missing redirectUrl" });
 
-  const { redirectUrl } = req.body;
+    const { redirectUrl } = req.body;
 
-  // Check if URL already exists
-  const urlExists = await URL.findOne({ redirectUrl: redirectUrl });
-  if (urlExists) {
-    // Return existing short URL if it exists
-    return res.status(409).json({
-      message: "URL already exists",
-      shortId: urlExists.shortId,
-      shortUrl: urlExists.shortUrl,
+    // Check if URL already exists
+    const urlExists = await findByRedirectUrl(redirectUrl);
+    if (urlExists) {
+      // Return existing short URL if it exists
+      return res.status(409).json({
+        message: "URL already exists",
+        shortId: urlExists.shortId,
+        shortUrl: urlExists.shortUrl,
+      });
+    }
+
+    // Generate new short URL and save it to the database
+    const shortId = nanoid(8);
+    const baseUrl = `${process.env.BASE_URL || `http://localhost:${PORT}`}`;
+    const shortUrl = `${baseUrl}/${shortId}`;
+
+    // Save the short URL to Firestore
+    await createUrl({
+      shortId: shortId,
+      redirectUrl: redirectUrl,
+      shortUrl: shortUrl,
+      visitHistory: [],
     });
+
+    // Return the short URL to the user
+    return res.status(201).json({
+      message: "Short URL generated successfully",
+      shortId: shortId,
+      shortUrl: shortUrl,
+      redirectUrl: redirectUrl,
+    });
+  } catch (error) {
+    console.error("Error generating short URL:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
-  // Generate new short URL and save it to the database
-  const shortId = nanoid(8);
-  const baseUrl = `${process.env.BASE_URL || `http://localhost:${PORT}`}`;  
-  
-  const shortUrl = `${baseUrl}/${shortId}`;
-  // Save the short URL to the database
-  await URL.create({
-    shortId: shortId,
-    redirectUrl: redirectUrl,
-    shortUrl: shortUrl,
-    visitHistory: [],
-  });
-  // Return the short URL to the user
-  return res.status(201).json({
-    message: "Short URL generated successfully",
-    shortId: shortId,
-    shortUrl: shortUrl,
-    redirectUrl: redirectUrl,
-  });
 };
 
 // Redirect to original URL
 export const redirectToOriginalUrl = async (req, res) => {
-  const { shortId } = req.params;
-  const url = await URL.findOneAndUpdate(
-    { shortId: shortId },
-    {
-      // Push the current timestamp to the visit history array
-      $push: {
-        visitHistory: {
-          timestamp: Date.now(),
-        },
-      },
-    }
-  );
-  if (!url) return res.status(404).json({ message: "URL not found" });
-  console.log(url);
-  res.redirect(url.redirectUrl);
+  try {
+    const { shortId } = req.params;
+    const url = await findByShortId(shortId);
+
+    if (!url) return res.status(404).json({ message: "URL not found" });
+
+    // Add visit history
+    const updatedVisitHistory = [
+      ...(url.visitHistory || []),
+      { timestamp: Date.now() },
+    ];
+
+    await updateUrl(shortId, {
+      visitHistory: updatedVisitHistory,
+    });
+
+    res.redirect(url.redirectUrl);
+  } catch (error) {
+    console.error("Error redirecting:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
 };
 
 // Analyze URL visit history
 export const analyzeUrl = async (req, res) => {
-  const { shortId } = req.params;
-  const url = await URL.findOne({ shortId: shortId });
-  if (!url) return res.status(404).json({ message: "ID not found" });
-  return res.status(200).json({
-    visitHistory: url.visitHistory,
-    clickCount: url.visitHistory.length,
-  });
+  try {
+    const { shortId } = req.params;
+    const url = await findByShortId(shortId);
+
+    if (!url) return res.status(404).json({ message: "ID not found" });
+
+    return res.status(200).json({
+      visitHistory: url.visitHistory || [],
+      clickCount: (url.visitHistory || []).length,
+    });
+  } catch (error) {
+    console.error("Error analyzing URL:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
 };
