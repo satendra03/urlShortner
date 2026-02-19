@@ -18,6 +18,8 @@ function Main() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start loading
+
+    console.log("URL:", import.meta.env.VITE_BASE_URL ); // Log the URL entered by the user
     try {
       const apiUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000/'; // API URL for shortening URLs
       console.log("API URL:", apiUrl);
