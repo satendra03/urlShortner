@@ -118,14 +118,6 @@ router.get("/", (req, res) => {
     </body>
     </html>
   `);
-
-  const markdownPath = './markdown.MD';
-  fs.readFile(markdownPath, 'utf8', (err, data) => {
-    if (err) return res.status(500).send('Error reading markdown file');
-
-    const htmlContent = marked(data); // convert MD to HTML
-    res.send(htmlContent); // send HTML as response
-  })
 });
 
 router.post('/', generateShortUrl);
