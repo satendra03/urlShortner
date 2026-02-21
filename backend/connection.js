@@ -37,7 +37,6 @@ export const initializeFirebase = () => {
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      projectId: process.env.FIREBASE_PROJECT_ID,
     });
 
     console.log("✅ Connected to Firebase");
