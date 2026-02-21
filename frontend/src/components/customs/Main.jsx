@@ -4,53 +4,50 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
+// Use Vercel env var, or fall back to the deployed Render backend URL
+const API_URL =
+  import.meta.env.VITE_BASE_URL || "https://urlshortner-fozw.onrender.com";
+
 function Main() {
-  // The URL entered by the user
   const [url, setUrl] = useState("");
-
-  // The generated short URL
   const [shortUrl, setShortUrl] = useState("");
-
-  // Loading state to show a spinner during the request
   const [loading, setLoading] = useState(false);
 
-  // Function to handle form submission and generate a short URL
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
-    console.log("URL:", import.meta.env.VITE_BASE_URL ); // Log the URL entered by the user
     try {
-      const apiUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8000/'; // API URL for shortening URLs
-      console.log("API URL:", apiUrl);
-      const response = await fetch(apiUrl, {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ redirectUrl: url }), // Send user input URL
+        body: JSON.stringify({ redirectUrl: url }),
       });
+
       const data = await response.json();
-      setLoading(false); // Stop loading
-      console.log("Data", data); //
+      setLoading(false);
 
       if (response.ok) {
-        setShortUrl(data.shortUrl); // Set the shortened URL
+        setShortUrl(data.shortUrl);
+        toast.success("Short URL generated!");
       } else if (response.status === 409) {
-        toast("This URL has already been shortened.", {
-          icon: "⚠️",
-        }); // Alert user if URL has already been shortened
-        setShortUrl(data.shortUrl); // Set the shortened URL
+        toast("This URL has already been shortened.", { icon: "⚠️" });
+        setShortUrl(data.shortUrl);
       } else {
-        console.error(data.message); // Handle errors from backend
+        toast.error(data.message || "Failed to shorten URL");
+        console.error(data.message);
       }
     } catch (error) {
-      setLoading(false); // Stop loading on error
+      setLoading(false);
       console.error("Error:", error);
+      toast.error(
+        "Could not reach the server. It may be waking up — please try again in a few seconds.",
+      );
     }
   };
 
-  // Function to copy the shortened URL to the clipboard
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shortUrl);
@@ -59,7 +56,8 @@ function Main() {
         window.open(shortUrl, "_blank", "noopener,noreferrer");
       }, 1000);
     } catch (error) {
-      toast.error("Failed to copy URL:", error);
+      toast.error("Failed to copy URL");
+      console.error(error);
     }
   };
 
@@ -78,9 +76,9 @@ function Main() {
         <Button
           type="submit"
           className="my-5 transition-all hover:shadow-md hover:scale-105 active:scale-95"
-          disabled={loading} // Disable button while loading
+          disabled={loading}
         >
-          {loading ? "Shortening..." : "Shorten URL"} {/* Loading text */}
+          {loading ? "Shortening..." : "Shorten URL"}
         </Button>
       </form>
       {shortUrl && (

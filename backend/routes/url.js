@@ -1,5 +1,9 @@
-import express from 'express';
-import { analyzeUrl, generateShortUrl, redirectToOriginalUrl } from '../controllers/url.js';
+import express from "express";
+import {
+  analyzeUrl,
+  generateShortUrl,
+  redirectToOriginalUrl,
+} from "../controllers/url.js";
 
 export const router = express.Router();
 
@@ -120,8 +124,10 @@ router.get("/", (req, res) => {
   `);
 });
 
-router.post('/', generateShortUrl);
+router.post("/", generateShortUrl);
 
-router.get('/:shortId', redirectToOriginalUrl);
+// ⚠️ IMPORTANT: /analyze/:shortId MUST come before /:shortId
+// otherwise Express matches /analyze/xxx as a redirect shortId
+router.get("/analyze/:shortId", analyzeUrl);
 
-router.get('/analyze/:shortId', analyzeUrl);
+router.get("/:shortId", redirectToOriginalUrl);

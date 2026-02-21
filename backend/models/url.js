@@ -3,11 +3,14 @@ import { getFirestore } from "../connection.js";
 // Collection name
 const URLS_COLLECTION = "urls";
 
-// Get the Firestore database instance
-const db = getFirestore();
-
 // Get reference to URLs collection
 export const getUrlsCollection = () => {
+  const db = getFirestore();
+  if (!db) {
+    throw new Error(
+      "Firebase is not initialized. Check your FIREBASE_SERVICE_ACCOUNT env var.",
+    );
+  }
   return db.collection(URLS_COLLECTION);
 };
 

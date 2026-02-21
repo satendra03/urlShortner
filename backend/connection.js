@@ -14,9 +14,14 @@ export const initializeFirebase = () => {
     }
 
     // Parse the Firebase service account JSON from environment variable
-    const serviceAccount = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT || "{}"
-    );
+    const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT || "{}";
+    const serviceAccount = JSON.parse(serviceAccountRaw);
+
+    if (!serviceAccount.project_id) {
+      throw new Error(
+        "FIREBASE_SERVICE_ACCOUNT env var is missing or malformed.",
+      );
+    }
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
@@ -26,8 +31,12 @@ export const initializeFirebase = () => {
     console.log("✅ Connected to Firebase");
     return admin.firestore();
   } catch (error) {
-    console.error("❌ Error initializing Firebase: ", error);
-    process.exit(1);
+    // Don't exit — log the error so Render doesn't restart loop
+    console.error("❌ Error initializing Firebase:", error.message);
+    console.error(
+      "⚠️  Server will continue running but DB operations will fail until env vars are fixed.",
+    );
+    return null;
   }
 };
 
