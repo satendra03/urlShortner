@@ -13,13 +13,25 @@ export const initializeFirebase = () => {
       return admin.firestore();
     }
 
-    // Parse the Firebase service account JSON from environment variable
-    const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT || "{}";
-    const serviceAccount = JSON.parse(serviceAccountRaw);
+    // Parse the Firebase service account JSON from environment variable.
+    // Trim surrounding single/double quotes that can appear when the env var
+    // is set via a .env file using  KEY='{ ... }' syntax.
+    let serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT || "{}";
+    serviceAccountRaw = serviceAccountRaw.trim().replace(/^['"]|['"]$/g, "");
+
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(serviceAccountRaw);
+    } catch (parseErr) {
+      throw new Error(
+        `Failed to parse FIREBASE_SERVICE_ACCOUNT JSON: ${parseErr.message}. ` +
+          "Make sure the value in Render's environment variables is raw JSON without surrounding quotes.",
+      );
+    }
 
     if (!serviceAccount.project_id) {
       throw new Error(
-        "FIREBASE_SERVICE_ACCOUNT env var is missing or malformed.",
+        "FIREBASE_SERVICE_ACCOUNT env var is missing or malformed — project_id not found.",
       );
     }
 
