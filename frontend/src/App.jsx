@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Main from "./components/customs/Main";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModeToggle } from "./components/mode-toggle";
@@ -7,18 +7,23 @@ import Work from "./components/customs/Work";
 import { Link } from "react-router-dom";
 
 const BACKEND_URL =
-  import.meta.env.VITE_BASE_URL || "https://urlshortner-fozw.onrender.com";
+  import.meta.env.VITE_BASE_URL || "http://localhost:8000";
 
 function App() {
+  const [backendStatus, setBackendStatus] = useState("checking");
   // Keep the Render free-tier backend alive by pinging /health every 13 minutes.
   // Render spins down free instances after 15 min of inactivity — this prevents that.
   useEffect(() => {
     const ping = () => {
       fetch(`${BACKEND_URL}/health`, { method: "GET" })
-        .then(() => console.log("🟢 Backend is alive"))
-        .catch(() =>
-          console.warn("🔴 Backend ping failed - instance may be sleeping"),
-        );
+        .then(() => {
+          console.log("🟢 Backend is alive");
+          setBackendStatus("live");
+        })
+        .catch(() => {
+          console.warn("🔴 Backend ping failed - instance may be sleeping");
+          setBackendStatus("offline");
+        });
     };
 
     // Ping immediately on load so the instance wakes up as fast as possible
@@ -32,9 +37,35 @@ function App() {
   return (
     <div className="relative">
       <div className="content">
-        <h1 className="scroll-m-20 my-5 md:my-10 text-3xl md:text-4xl font-extrabold tracking-tight lg:text-5xl">
+        <span
+            title={`Backend: ${backendStatus}`}
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all duration-500 ${
+              backendStatus === "live"
+                ? "bg-green-500/10 text-green-400 border-green-500/25"
+                : backendStatus === "offline"
+                  ? "bg-red-500/10 text-red-400 border-red-500/25"
+                  : "bg-muted/40 text-muted-foreground border-border"
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                backendStatus === "live"
+                  ? "bg-green-400 animate-pulse"
+                  : backendStatus === "offline"
+                    ? "bg-red-400"
+                    : "bg-muted-foreground animate-pulse"
+              }`}
+            />
+            {backendStatus === "live"
+              ? "Live"
+              : backendStatus === "offline"
+                ? "Offline"
+                : "Checking…"}
+          </span>
+        <h1 className="scroll-m-20 my-5 md:my-10 text-3xl md:text-4xl font-extrabold tracking-tight lg:text-5xl flex items-center justify-center gap-3 flex-wrap">
           Short N Share
         </h1>
+        
         <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
           Welcome
         </h3>
